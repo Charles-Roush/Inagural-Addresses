@@ -163,11 +163,11 @@ def plot(bmean, bmedian, bstd, amean, amedian, astd, counts, dates, title, split
     plt.plot(after, [amedian, amedian], 'r')
     plt.plot(after, [amean + astd, amean + astd], 'g')
     plt.plot(after, [amean - astd, amean - astd], 'g')
-
     plt.legend()
     plt.xlabel(title)
     check_dir(directory)
-    plt.savefig(f'{directory}/Date Vs {title}')    
+    plt.savefig(f'{directory}/Date Vs {title}') 
+    plt.close()   
 
 def plot_gauss(bdistribution, bgaussian_values, adistribution, agaussian_values, title, bstd, astd, bsd1, bsd2, asd1, asd2, bmean, amean):
     directory = f'graphs/{title}'
@@ -190,6 +190,26 @@ def plot_gauss(bdistribution, bgaussian_values, adistribution, agaussian_values,
 
     check_dir(directory)
     plt.savefig(f'{directory}/Gaussian {title}')
+    plt.close()
+
+def sub_plot(counts, dates, title):
+    directory = f'graphs/{title}'
+    grades = [9, 13, 16]
+    fig = plt.figure()
+    rows = len(counts)
+    axs = fig.subplots(nrows=rows, ncols=1, sharex = True, sharey=False)
+    
+    for i in range(rows):
+        axs[i].plot(dates, counts[i])
+    
+    for grade in grades:
+        axs[1].plot([1789, 2021], [grade, grade], label = f"grade {grade}")
+
+    plt.legend()
+    plt.xlabel(title)
+    check_dir(directory)
+    plt.savefig(f'{directory}/Subplot Date Vs {title}')    
+    plt.close()
 
 def graph(counts, dates, title):
     splitdate = 1937
@@ -206,8 +226,10 @@ def graph(counts, dates, title):
 
     plot(bmean, bmedian, bstd, amean, amedian, astd, counts, dates, title, splitdate)
     plot_gauss(bdistribution, bgaussian_values, adistribution, agaussian_values, title, bstd, astd, bsd1, bsd2, asd1, asd2, bmean, amean)
-
+    
+    
 def main():
+    plt.style.use('bmh')
     check_dir("graphs")
     lines = open_addresses('addresses.txt')
     speechs, dates, presidents = load_addresses(lines)
@@ -222,5 +244,7 @@ def main():
     graph(syllables,  dates, 'Syllables')
     graph(syllablesperword, dates, 'Syllables per Word')
     graph(grade_level, dates, 'Grade Level')
+    sub_plot([syllablesperword, grade_level], dates, "Syllables Per Word, Grade Level")
+    sub_plot([wordspersentence, grade_level, syllablesperword], dates, "Wordspersentence, Grade_level, Syllablesperword")
     
 main()
